@@ -1,0 +1,1 @@
+const original = { name: 'jeff' };
