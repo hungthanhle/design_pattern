@@ -1,16 +1,22 @@
-class Calculator {
-  add(a: number, b: number) {
-    console.log(`Calling add with arguments: ${a}, ${b}`);
-    const result = a + b;
-    console.log(`Result: ${result}`);
+function Log(target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`Calling ${propertyName} with arguments:`, args);
+    const result = original.apply(this, args);
+    console.log(`Result:`, result);
     return result;
+  };
+}
+
+class Calculator {
+  @Log
+  add(a: number, b: number) {
+    return a + b;
   }
 
+  @Log
   multiply(a: number, b: number) {
-    console.log(`Calling multiply with arguments: ${a}, ${b}`);
-    const result = a * b;
-    console.log(`Result: ${result}`);
-    return result;
+    return a * b;
   }
 }
 
