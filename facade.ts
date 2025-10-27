@@ -17,22 +17,28 @@ class AnalyticsService {
   }
 }
 
-class UserController {
+class UserFacade {
   constructor(
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly analyticsService: AnalyticsService,
   ) {}
 
+  async registerUser(name: string, email: string) {
+    const user = this.userService.createUser(name, email);
+    this.emailService.sendWelcomeEmail(email);
+    this.analyticsService.recordEvent('USER_REGISTERED', user);
+    return user;
+  }
+}
+
+class UserController {
+  constructor(
+    private readonly userFacade: UserFacade
+  ) {}
+
   @Post()
   async createUser(@Body() body: { name: string; email: string }) {
-    // Tự gọi từng service một
-    const user = this.userService.createUser(body.name, body.email);
-
-    this.emailService.sendWelcomeEmail(body.email);
-
-    this.analyticsService.recordEvent('USER_REGISTERED', user);
-
-    return user;
+    return this.userFacade.registerUser(body.name, body.email);
   }
 }
