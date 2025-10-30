@@ -35,5 +35,19 @@ class MapBoxService {
 }
 
 const mapBoxService = new MapBoxService();
-const app1 = new LocationApp(mapBoxService); // LỖI [Property 'getCoordinates' is missing in type 'MapBoxService']
+
+class MapBoxAdapter extends GoogleMapService {
+  constructor(private mapBox: MapBoxService) {
+    super();
+  }
+
+  getCoordinates(address: string) {
+    const coords = this.mapBox.getLatLongByPlaceName(address);
+    // Chuyển đổi format cho đúng với app cũ
+    return { lat: coords.latitude, lng: coords.longitude };
+  }
+}
+
+const adaptedService = new MapBoxAdapter(mapBoxService);
+const app1 = new LocationApp(adaptedService); // 
 app1.showLocation("TP. Hồ Chí Minh");
